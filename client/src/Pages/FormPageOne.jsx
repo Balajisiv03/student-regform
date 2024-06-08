@@ -17,7 +17,7 @@ function FormPageOne({ formData, handleChange, handleNext }) {
           Student Registration Number
         </label>
         <input
-          type="text"
+          type="number"
           name="regnumber"
           value={formData.regnumber}
           onChange={handleChange}

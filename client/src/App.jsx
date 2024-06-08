@@ -26,13 +26,30 @@ function App() {
       // If the input is a file input (for resume), store the file
       setFormData({ ...formData, [name]: files[0] });
     } else if (type === "checkbox") {
-      // If the input is a checkbox, update the tech stack
       const updatedTechStack = formData.techstack.includes(value)
         ? formData.techstack.filter((tech) => tech !== value)
         : [...formData.techstack, value];
       setFormData({ ...formData, techstack: updatedTechStack });
+    } else if (name === "dob") {
+      const today = new Date();
+      const selectedDate = new Date(value);
+      const ageDiff = today.getFullYear() - selectedDate.getFullYear();
+      const monthDiff = today.getMonth() - selectedDate.getMonth();
+
+      if (selectedDate > today) {
+        alert("Please select a date in the past.");
+        return;
+      }
+
+      if (ageDiff < 18 || (ageDiff === 18 && monthDiff < 0)) {
+        alert("You must be at least 18 years old.");
+        return;
+      }
+
+      setFormData({ ...formData, [name]: value });
     } else {
-      // For other input types (text, radio, etc.), just update the corresponding field
+      // For other input types (text, radio, etc) updating the corresponding field
+
       setFormData({ ...formData, [name]: value });
     }
   };
@@ -42,6 +59,19 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validate name length
+    if (formData.name.length > 40 || formData.name.length < 2) {
+      alert("Name should be between 2 and 40 characters.");
+      return;
+    }
+
+    // Validate registration number length
+    if (formData.regnumber.length !== 12) {
+      alert("Registration number should be 12 digits");
+      return;
+    }
+    alert("Form submitted successfully");
     setSubmitted(true);
   };
 
@@ -55,7 +85,9 @@ function App() {
       }}
     >
       <div className="bg-slate-300 p-8 rounded shadow-md w-full max-w-lg m-10">
-        {!submitted ? (
+        {submitted ? (
+          <SubmittedData formData={formData} />
+        ) : (
           <form onSubmit={handleSubmit}>
             {page === 1 && (
               <FormPageOne
@@ -73,8 +105,6 @@ function App() {
               />
             )}
           </form>
-        ) : (
-          <SubmittedData formData={formData} />
         )}
       </div>
     </div>
